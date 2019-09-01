@@ -1,22 +1,22 @@
-#include<reg52.h>//lcd1602 Êı×ÖÖÓ ¿Éµ÷ÕûÊ±¼äºÍÈÕÆÚ
+#include<reg52.h>//lcd1602 æ•°å­—é’Ÿ å¯è°ƒæ•´æ—¶é—´å’Œæ—¥æœŸ
 #define uint unsigned int
 #define uchar unsigned char
 //lcd_data=P0
-//Î»¶¨Òå
+//ä½å®šä¹‰
 sbit lcdrs=P2^2;
 sbit lcdrw=P2^1;
 sbit lcden=P2^0;
 sbit k1=P3^3;//mod
 sbit k2=P3^2;//+
 sbit k3=P3^1;//-
-//º¯ÊıÉùÃ÷
-uchar i,t=0,k1num=0;//tÎªÖĞ¶Ï´ÎÊı¼ÆÊı£¬k1numÎªk1°´ÏÂµÄ´ÎÊı
-uint year=2013;//yearÄê
-char h=0,m=0,s=0,w=7,month=3,day=3;//hÊ±£¬m·Ö£¬sÃë£¬wĞÇÆÚ£¬yearÄê£¬monthÔÂ£¬dayÈÕ
+//å‡½æ•°å£°æ˜
+uchar i,t=0,k1num=0;//tä¸ºä¸­æ–­æ¬¡æ•°è®¡æ•°ï¼Œk1numä¸ºk1æŒ‰ä¸‹çš„æ¬¡æ•°
+uint year=2013;//yearå¹´
+char h=0,m=0,s=0,w=7,month=3,day=3;//hæ—¶ï¼Œmåˆ†ï¼Œsç§’ï¼Œwæ˜ŸæœŸï¼Œyearå¹´ï¼Œmonthæœˆï¼Œdayæ—¥
 
-uchar code table1[]={" 2013-03-03 SUN "};//ÈÕÆÚ
-uchar code table2[]={"    00:00:00    "};//Ê±¼ä
-//ÑÓÊ±z ms
+uchar code table1[]={" 2013-03-03 SUN "};//æ—¥æœŸ
+uchar code table2[]={"    00:00:00    "};//æ—¶é—´
+//å»¶æ—¶z ms
 void delay(uchar z)
 {
 	uchar x,y;
@@ -33,7 +33,7 @@ void write_com(uchar com)
 	delay(10);
 	lcden=0;
 }
-//lcdĞ´Êı¾İ
+//lcdå†™æ•°æ®
 void write_dat(uchar dat)
 {
 	lcdrs=1;
@@ -107,7 +107,7 @@ void Sunday(void)
 	write_com(0x80+14);
 	write_dat('N');
 }
-void display_week(uchar week)//ĞÇÆÚÏÔÊ¾
+void display_week(uchar week)//æ˜ŸæœŸæ˜¾ç¤º
 {
 	switch(week)
 	{
@@ -120,7 +120,7 @@ void display_week(uchar week)//ĞÇÆÚÏÔÊ¾
 	case 7:Sunday();break;
 	}
 }
-//lcd³õÊ¼ÉèÖÃ
+//lcdåˆå§‹è®¾ç½®
 void init(void)
 {
 	lcden=0;
@@ -134,16 +134,16 @@ void init(void)
 	EA=1;
 	TH0=0x3c;TL0=0xb0;//50ms
 	TR0=1;
-	write_com(0x80);//µÚÒ»ĞĞ
+	write_com(0x80);//ç¬¬ä¸€è¡Œ
 	for(i=0;i<15;i++)
 		{write_dat(table1[i]);delay(5);}
-	write_com(0x80+0x40);//µÚ¶şĞĞ
+	write_com(0x80+0x40);//ç¬¬äºŒè¡Œ
 	for(i=0;i<11;i++)
 		{write_dat(table2[i]);delay(5);}	
 }
 
 
-void display_time(uchar ad,uchar time)//Ê±¼äÏÔÊ¾
+void display_time(uchar ad,uchar time)//æ—¶é—´æ˜¾ç¤º
 {
 	uchar a,b;
 	a=time/10;b=time%10;
@@ -153,14 +153,14 @@ void display_time(uchar ad,uchar time)//Ê±¼äÏÔÊ¾
 	write_dat(0x30+b);
 }
 
-void display_date(uint nian,char yue,char ri)//ÈÕÆÚÏÔÊ¾
+void display_date(uint nian,char yue,char ri)//æ—¥æœŸæ˜¾ç¤º
 {
 	uint y1,y2,y3,y4;
 	char a,b,c,d;
-	y1=nian/1000;         //Ç§Î»
-	y2=nian%1000/100;     //°ÙÎ»
-	y3=nian%1000%100/10;  //Ê®Î»
-	y4=nian%1000%100%10;  //¸öÎ»
+	y1=nian/1000;         //åƒä½
+	y2=nian%1000/100;     //ç™¾ä½
+	y3=nian%1000%100/10;  //åä½
+	y4=nian%1000%100%10;  //ä¸ªä½
 	a=yue/10;
 	b=yue%10;
 	c=ri/10;
@@ -183,7 +183,7 @@ void display_date(uint nian,char yue,char ri)//ÈÕÆÚÏÔÊ¾
 	write_dat(0x30+d);
 }
 
-void keyscan(void)//°´¼üÉ¨Ãè
+void keyscan(void)//æŒ‰é”®æ‰«æ
 {
 	if(k1==0)
 	{
@@ -331,7 +331,7 @@ display_time(4,h);
 }
 
 
-void main(void)//Ö÷º¯Êı
+void main(void)//ä¸»å‡½æ•°
 {
 	init();
 	while(1)
@@ -340,7 +340,7 @@ void main(void)//Ö÷º¯Êı
 	}
 }
 
-void timer0() interrupt 1//¶¨Ê±Æ÷T0ÖĞ¶Ïº¯Êı
+void timer0() interrupt 1//å®šæ—¶å™¨T0ä¸­æ–­å‡½æ•°
 {
 	t++;
 	TH0=0x3c;TL0=0xb0;//50ms
@@ -359,3 +359,4 @@ void timer0() interrupt 1//¶¨Ê±Æ÷T0ÖĞ¶Ïº¯Êı
 	if(month==13)
 	{year++;month=1;}
 }
+//ä¿®æ”¹äº†ä¸€æ¬¡
