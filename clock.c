@@ -1,20 +1,24 @@
 #include<reg52.h>//lcd1602 数字钟 可调整时间和日期
-#define uint unsigned int
+//定义类型
+#define uint unsigned int 		
 #define uchar unsigned char
 //lcd_data=P0
-//位定义
+//位定义,显示器显示
 sbit lcdrs=P2^2;
 sbit lcdrw=P2^1;
 sbit lcden=P2^0;
-sbit k1=P3^3;//mod
-sbit k2=P3^2;//+
-sbit k3=P3^1;//-
+//
+sbit k1=P1^0;//mod
+sbit k4=P1^1;//mod
+sbit k5=P1^2;//mod
+sbit k2=P1^3;//+
+sbit k3=P1^4;//-
 //函数声明
-uchar i,t=0,k1num=0;//t为中断次数计数，k1num为k1按下的次数
-uint year=2013;//year年
-char h=0,m=0,s=0,w=7,month=3,day=3;//h时，m分，s秒，w星期，year年，month月，day日
-
-uchar code table1[]={" 2013-03-03 SUN "};//日期
+uchar i,t=0,k1num=0;//t为记录的中断次数计数，k1num为k1按下的次数（实现修改时间功能）
+uint year=2019;//year年
+char h=0,m=0,s=0,w=7,month=9,day=2;//h时，m分，s秒，w星期，year年，month月，day日
+//设定一开始的字符
+uchar code table1[]={" 2019-09-02 SUN "};//日期
 uchar code table2[]={"    00:00:00    "};//时间
 //延时z ms
 void delay(uchar z)
@@ -359,4 +363,4 @@ void timer0() interrupt 1//定时器T0中断函数
 	if(month==13)
 	{year++;month=1;}
 }
-//修改了两次
+
