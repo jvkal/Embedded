@@ -1,6 +1,6 @@
 #include<reg52.h>//lcd1602 数字钟 可调整时间和日期
 //定义类型
-#define uint unsigned int 		
+#define uint unsigned int
 #define uchar unsigned char
 //lcd_data=P0
 //位定义,显示器显示
@@ -8,9 +8,9 @@ sbit lcdrs=P2^2;
 sbit lcdrw=P2^1;
 sbit lcden=P2^0;
 //
-sbit k1=P1^0;//mod
-sbit k4=P1^1;//mod
-sbit k5=P1^2;//mod
+sbit k1=P1^0;//修改时间
+sbit k4=P1^1;//定闹钟
+sbit k5=P1^2;//秒表
 sbit k2=P1^3;//+
 sbit k3=P1^4;//-
 //函数声明
@@ -20,34 +20,19 @@ char h=0,m=0,s=0,w=7,month=9,day=2;//h时，m分，s秒，w星期，year年，mo
 //设定一开始的字符
 uchar code table1[]={" 2019-09-02 SUN "};//日期
 uchar code table2[]={"    00:00:00    "};//时间
-//延时z ms
+//延时函数 传入z既可以延时zms
 void delay(uchar z)
 {
 	uchar x,y;
-	for(x=z;x>0;x--)
-		for(y=110;y>0;y--);
+	for(x=z;x>0;x--){
+	    for(y=110;y>0;y--);{
+	    
+	    }
+	}
+		
 }
-void write_com(uchar com)
-{
-	lcdrs=0;
-	lcdrw=0;
-	P0=com;
-	delay(10);
-	lcden=1;
-	delay(10);
-	lcden=0;
-}
-//lcd写数据
-void write_dat(uchar dat)
-{
-	lcdrs=1;
-	lcdrw=0;
-	P0=dat;
-	delay(10);
-	lcden=1;
-	delay(10);
-	lcden=0;
-}
+
+//显示日期的函数
 void Monday(void)
 {
 	write_com(0x80+12);
@@ -111,28 +96,42 @@ void Sunday(void)
 	write_com(0x80+14);
 	write_dat('N');
 }
-void display_week(uchar week)//星期显示
+//写位置，当输入com显示在不同的位置出现字符
+void write_com(uchar com)
 {
-	switch(week)
-	{
-	case 1:Monday();break;
-	case 2:Tuesday();break;
-	case 3:Wednesday();break;
-	case 4:Thursday();break;
-	case 5:Friday();break;
-	case 6:Saturday();break;
-	case 7:Sunday();break;
-	}
+	lcdrs=0;//不显示的意思
+	lcdrw=0;
+	P0=com;
+	delay(10);
+	lcden=1;
+	delay(10);
+	lcden=0;
+}
+//对lcd进行写数据处理，当后面+上int类型屏幕上显示对应的int信息
+void write_dat(uchar dat)
+{
+	lcdrs=1;
+	lcdrw=0;
+	P0=dat;
+	delay(10);
+	lcden=1;
+	delay(10);
+	lcden=0;
+}
+void Print(uchar *str)	 //指定坐标输出字符串
+{
+	while(*str)  
+		write_dat(*str++);
 }
 //lcd初始设置
 void init(void)
 {
 	lcden=0;
-	write_com(0x38);
-	write_com(0x0c);
-	write_com(0x06);
-	write_com(0x01);
-	write_com(0x80);
+	write_com(0x38); //8位数据端口,2行显示,5*7点阵
+	write_com(0x0c); //显示模式
+	write_com(0x06);//输入模式
+	write_com(0x01);//清屏
+	write_com(0x80);//切换当前位置到第一行
 	TMOD=0x01;
 	ET0=1;
 	EA=1;
@@ -146,8 +145,21 @@ void init(void)
 		{write_dat(table2[i]);delay(5);}	
 }
 
-
-void display_time(uchar ad,uchar time)//时间显示
+//时间显示模块
+void display_week(uchar week)//星期显示
+{
+	switch(week)
+	{
+	case 1:Monday();break;
+	case 2:Tuesday();break;
+	case 3:Wednesday();break;
+	case 4:Thursday();break;
+	case 5:Friday();break;
+	case 6:Saturday();break;
+	case 7:Sunday();break;
+	}
+}
+void display_time(uchar ad,uchar time)//显示时间
 {
 	uchar a,b;
 	a=time/10;b=time%10;
@@ -348,7 +360,7 @@ void timer0() interrupt 1//定时器T0中断函数
 {
 	t++;
 	TH0=0x3c;TL0=0xb0;//50ms
-	if(t==20)
+	if(t==20)//t相当于软件控制时间的参数
 	{s++;t=0;}
 	if(s==60)
 	{m++;s=0;}
